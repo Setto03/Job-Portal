@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin công ty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .nav-item:hover {
+            background-color: ghostwhite;
+        }
+
+        .nav-item>a:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<!--   Navigation bar   -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark nav-fill w-100">
+    <a class="navbar-brand mx-3" th:href="@{/home}">Work CV</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav mx-2">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/home}">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/job}">Việc làm</a>
+            </li>
+            <li sec:authorize="!isAuthenticated()" class="nav-item">
+                <a class="nav-link" th:href="@{/login}">Đăng nhập</a>
+            </li>
+            <li sec:authorize="isAuthenticated()" class="nav-item">
+                <a class="nav-link" th:href="@{/logout}" >Đăng xuất</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <h1 th:text="${job.title}"></h1>
+        <hr>
+        <br>
+        <h2>Description</h2>
+        <p th:text="${job.description}"></p>
+        <br>
+        <p><strong>Category:</strong> <span th:text="${job.category.name}"></span> </p>
+        <p><strong>Requirement:</strong> <span th:text="${job.experience}"></span> </p>
+        <p><strong>Benefits:</strong> <span th:text="${job.salary}"></span> </p>
+        <hr>
+        <br>
+
+        <div class="btn-group mt-2">
+            <button sec:authorize="!hasAuthority('COMPANY')" class="btn btn-primary mx-2" type="button">
+                <a class="text-white text-decoration-none" th:href="@{/job/upload (id = ${job.getId()})}" onclick="return confirmApply();">Apply</a>
+            </button>
+            <button sec:authorize="hasAuthority('COMPANY')" class="btn btn-success mx-2" type="button">
+                <a class="text-white text-decoration-none" th:href="@{/job/update (id = ${job.getId()})}">Update</a>
+            </button>
+            <button sec:authorize="hasAuthority('COMPANY')" class="btn btn-danger mx-2" type="button">
+                <a class="text-white text-decoration-none" th:href="@{/job/delete (id = ${job.getId()})}" onclick="return confirmDelete();">Remove</a>
+            </button>
+        </div>
+        <div class="alert alert-danger" th:if="${noCV}">
+            <p th:text="${noCV}"></p>
+            <a th:href="@{/u/info}">Upload your CV</a>
+        </div>
+        <div class="alert alert-secondary" th:if="${yesCV}">
+            <p th:text="${yesCV}"></p>
+        </div>
+        <div class="alert alert-success" th:if="${success}">
+            <p th:text="${success}"></p>
+        </div>
+    </div>
+
+    <div class="container-fluid" sec:authorize="hasAuthority('COMPANY')">
+        <h1 class="pt-4 text-dark text-center">Applicant List</h1>
+        <ul class="list-group">
+            <li th:each="applicant : ${applicants}">
+                <div class="row justify-content-center mt-2">
+                    <div class="list-group-item col-md-7">
+                        <h3 class="list-group-item-heading" th:text="${applicant.fullname}"/>
+                        <a class="btn btn-secondary" th:href="@{/job/applicant/info (id = ${applicant.id})}">Details</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function confirmDelete() {
+        return window.confirm("Remove this job from your job list?");
+    }
+
+    function confirmApply() {
+        return window.confirm("Confirm applying for this job? Repeated apply is not recommended");
+    }
+</script>
+
+</body>
+</html>

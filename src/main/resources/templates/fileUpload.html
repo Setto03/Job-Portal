@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+</head>
+<body>
+<h2>File Upload</h2>
+<form  id="fileUploadForm" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" id="file" accept=".pdf, .doc, .docx">
+    <input type="hidden" name="id" id="id" th:value="${user.id}">
+    <button type="submit">Upload File</button>
+</form>
+</body>
+</html>
